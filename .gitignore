@@ -1,0 +1,11 @@
+.vscode/settings.json
+venv/
+db.sqlite3
+jobs/__pycache__/
+job_board/__pycache__/
+frontend/node_modules
+*.log
+jobs/migrations/
+*.pyc
+__pycache__/
+frontend/webpack-stats.json
