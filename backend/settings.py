@@ -39,8 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework', # 追加
+    'rest_framework.authtoken', #　認証トークン
     'app', # 追加
     'corsheaders', # 追加
+    'accounts', # 追加
 ]
 
 MIDDLEWARE = [
@@ -82,11 +84,16 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ATOMIC_REQUESTS': True,  # 追加
+    },
+    # 以下はデフォ
+    # 'OPTIONS': {
+    #     'isolation_level': 'READ COMMITTED',
+    # },
 }
 
 
-# Password validation
+# Password validation　パスワードのバリデーションルール
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -108,9 +115,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ja'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tokyo'
 
 USE_I18N = True
 
@@ -155,3 +162,54 @@ CORS_ORIGIN_WHITELIST = (
 # プリフライト(事前リクエスト)の設定
 # 30分だけ許可
 CORS_PREFLIGHT_MAX_AGE = 60 * 30
+
+# 認証ユーザーのモデルを指定
+AUTH_USER_MODEL = 'accounts.User'
+
+LOGGING = {
+    # スキーマバージョンは1固定
+    'version': 1,
+    # すでに作成されているロガーを無効化しないための設定
+    'disable_existing_loggers': False,
+    # ログの書式設定
+    'formatters': {
+        # 詳細ログの書式
+        'verbose': {
+            'format': '[%(asctime)s][pid:%(process)d][%(levelname)s] %(message)s'
+        },
+        # 簡易ログの書式
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        # ログレベル「CRITICAL」「ERROR」「WARNING」「INFO」「DEBUG」
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'debug.log'),
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        # DBSQL
+        'django.db.backends': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+
+        },
+        # djangoフレームワーク用のロガー
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}

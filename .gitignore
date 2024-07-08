@@ -1,8 +1,6 @@
 .vscode/settings.json
 venv/
 db.sqlite3
-jobs/__pycache__/
-job_board/__pycache__/
 frontend/node_modules
 *.log
 jobs/migrations/
