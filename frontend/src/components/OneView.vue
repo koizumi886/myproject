@@ -1,7 +1,15 @@
 <template>
-  <div class="hello">
+  <v-container class="hello">
     <div class="title-color">d [[ text ]] b</div>
-  </div>
+    <v-img
+      :src="require('../assets/logo.svg')"
+      class="my-3"
+      contain
+      height="200"
+    />
+    <v-btn @click="submit"> Submit </v-btn>
+    {{ message }}
+  </v-container>
 </template>
 
 <script>
@@ -15,7 +23,16 @@ export default {
   data() {
     return {
       text: null,
+      message: "",
     };
+  },
+  methods: {
+    submit() {
+      this.message = "submit";
+    },
+    cancel() {
+      this.message = "cancel";
+    },
   },
   mounted() {
     axios

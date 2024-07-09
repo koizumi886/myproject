@@ -1,7 +1,7 @@
 <template>
-  <div class="hello">
+  <v-container class="hello">
     <div class="title-color">d [[ text ]] b</div>
-  </div>
+  </v-container>
 </template>
 
 <script>

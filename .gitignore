@@ -6,4 +6,4 @@ frontend/node_modules
 jobs/migrations/
 *.pyc
 __pycache__/
-frontend/webpack-stats.json
+dist/
