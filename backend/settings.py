@@ -136,32 +136,27 @@ STATICFILES_DIRS = [BASE_DIR / 'dist/static']  # 追加
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # すべてのURLを許可する場合Trueを設定
-CORS_ORIGIN_ALLOW_ALL = True
+# CORS_ALLOW_ALL_ORIGINS = True
+
+# 自身以外のオリジンのHTTPリクエスト内にクッキーを含めることを許可する
+CORS_ALLOW_CREDENTIALS = True
 
 # アクセスを許可したいURL（アクセス元）を追加
-CORS_ORIGIN_WHITELIST = (
+CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8080',
     'http://127.0.0.1:8000',
     'http://localhost:8000',
     'http://localhost:8080',
     # 'https://33f9-2001-268-c141-cacb-196d-d0be-567c-f2a4.ngrok-free.app',
-)
-
-# 自身以外のオリジンのHTTPリクエスト内にクッキーを含めることを許可する
-# CORS_ALLOW_CREDENTIALS = True
-
-# アクセスを許可したいURL（アクセス元）を追加
-# CORS_ALLOWED_ORIGINS = [
-#     'http://127.0.0.1:8080',
-#     'http://127.0.0.1:8000',
-#     'http://localhost:8000',
-#     'http://localhost:8080',
-#     'https://33f9-2001-268-c141-cacb-196d-d0be-567c-f2a4.ngrok-free.app',
-#     # 他の許可したいドメインを追加
-# ]
+    # 他の許可したいドメインを追加
+]
 # プリフライト(事前リクエスト)の設定
 # 30分だけ許可
 CORS_PREFLIGHT_MAX_AGE = 60 * 30
+# セッション有効期間 1h
+SESSION_COOKIE_AGE = 60 * 60 * 1
+# 期限切れの基準を最後のページロードとする
+SESSION_SAVE_EVERY_REQUEST = True
 
 # 認証ユーザーのモデルを指定
 AUTH_USER_MODEL = 'accounts.User'

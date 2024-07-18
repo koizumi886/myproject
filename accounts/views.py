@@ -28,7 +28,7 @@ class UserRegistrationView(generics.CreateAPIView):
         if serializer.is_valid(raise_exception=True):
             user = serializer.save() # シリアライズ
             return Response({'user': UserRegistrationSerializer(user).data, # デシリアライズ
-                             'message': 'ユーザー登録が完了しました!'},
+                             'message': 'ユーザー登録が完了しました！'},
                             status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -130,7 +130,8 @@ class LogoutAPIView(APIView):
     def post(self, request):
         # トークン削除&ログアウト
         print('request.auth:', request.auth)
-        request.auth.delete()
+        # request.auth.delete()
+        # request.session.flush()
         logout(request)
         return Response({"message":"ログアウトしました"},status=status.HTTP_200_OK)
 
