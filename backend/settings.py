@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'app', # 追加
     'corsheaders', # 追加
     'accounts', # 追加
+    'poem', # 追加
 ]
 
 MIDDLEWARE = [
@@ -129,6 +130,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'dist/static']  # 追加
+MEDIA_URL = '/media/' # 画像ファイルを参照するためのURL
+MEDIA_ROOT = BASE_DIR / 'media' # 画像保存先ディレクトリ
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -137,6 +140,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # すべてのURLを許可する場合Trueを設定
 # CORS_ALLOW_ALL_ORIGINS = True
+
+# 信頼できる発信元リストに、Vueのオリジンを追加
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1:8080',
+    'http://127.0.0.1:8000',
+    'http://localhost:8080',
+    'http://localhost:8000',
+    ]
 
 # 自身以外のオリジンのHTTPリクエスト内にクッキーを含めることを許可する
 CORS_ALLOW_CREDENTIALS = True

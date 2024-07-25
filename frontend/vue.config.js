@@ -1,4 +1,5 @@
 const { defineConfig } = require('@vue/cli-service')
+// import { defineConfig } from "@vue/cli-service";
 module.exports = defineConfig({
   publicPath: "/",
   outputDir: "../dist",
@@ -25,7 +26,7 @@ module.exports = defineConfig({
     .tap(options => {
       options.compilerOptions = {
         whitespace: 'condense',
-        delimiters: ['[[', ']]']
+        delimiters: ['{{', '}}']
       };
       return options;
     });

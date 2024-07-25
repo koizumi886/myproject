@@ -64,7 +64,7 @@ class UserDetailView(APIView):
     def get(self, request):
         print('request.auth:', request.auth)
         # ユーザー名が指定されていない場合は現在のユーザー名をセット
-        # http://127.0.0.1:8000/accounts/profile/?username=user06
+        # http://127.0.0.1:8000/api/accounts/profile/?username=user06
         username = request.GET.get(key='username', default=request.user.username)
 
         if username == request.user.username:
