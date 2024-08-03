@@ -36,22 +36,7 @@ const userProfile = ref<UserProfile>({
   comment: null,
 });
 
-onMounted(() => {
-  // ログイン状態取得
-});
-
-watch(loggedIn, () => {
-  if (loggedIn.value) {
-    sessionStorage.setItem("loggedIn", "true");
-    console.log("in" + loggedIn.value);
-    sessionStorage.setItem("token", loginUser.value!.token!);
-    sessionStorage.setItem("username", loginUser.value!.username!);
-  } else {
-    sessionStorage.removeItem("loggedIn");
-    loginUser.value = undefined;
-    console.log("out" + loggedIn.value);
-  }
-});
+onMounted(() => {});
 
 // const useGetCookie = () => {
 //   // const $cookies = inject<VueCookies>("$cookies");
@@ -67,6 +52,7 @@ watch(loggedIn, () => {
 //   loggedIn.value = false;
 //   return false;
 // };
+// ログイン状態取得
 if (sessionStorage.getItem("loggedIn")) {
   loginUser.value = {
     message: "",
@@ -91,10 +77,26 @@ let meta = document.createElement("meta");
 meta.name = "description";
 meta.content =
   "<meta> 要素は、名前と値のペアで文書のメタデータを提供するのに使用できます。name 属性はメタデータの名前を与え、content 属性は値を与えます。";
-// document.head.appendChild(meta);
-// meta.name = "login";
+document.head.appendChild(meta);
+meta.name = "login";
+console.log("set" + loggedIn.value);
 // meta.content = loggedIn.value ? "Yes" : "No";
-// document.head.appendChild(meta);
+meta.content = loggedIn.value ? "Yes" : "No";
+document.head.appendChild(meta);
+watch(loggedIn, () => {
+  if (loggedIn.value) {
+    sessionStorage.setItem("loggedIn", "true");
+    console.log("in" + loggedIn.value);
+    sessionStorage.setItem("token", loginUser.value!.token!);
+    sessionStorage.setItem("username", loginUser.value!.username!);
+    meta.content = loggedIn.value ? "Yes" : "No";
+  } else {
+    sessionStorage.removeItem("loggedIn");
+    loginUser.value = undefined;
+    console.log("out" + loggedIn.value);
+    meta.content = loggedIn.value ? "Yes" : "No";
+  }
+});
 
 // CSRFトークンをmetaタグから取得
 // console.log(window.document.querySelector);
@@ -162,7 +164,9 @@ function logout(isActive: { value: boolean }) {
       alert("エラーが発生しました\n" + error.message);
       console.log(error.message);
     });
-  isActive.value = !isActive.value;
+  if (isActive?.value) {
+    isActive.value = !isActive.value;
+  }
 }
 
 // ユーザー情報取得
@@ -184,8 +188,8 @@ async function getUserInfo() {
 
 <template>
   <v-app>
-    <v-system-bar color="grey-lighten-4"> System Bar </v-system-bar>
-    <v-app-bar color="teal-accent-1" dark app>
+    <!-- <v-system-bar color="grey-lighten-4"> System Bar </v-system-bar> -->
+    <v-app-bar color="lime-darken-3" dark app>
       <template v-slot:prepend>
         <v-app-bar-nav-icon
           variant="text"
@@ -209,80 +213,52 @@ async function getUserInfo() {
           <template v-slot:default="{ isActive }">
             <v-sheet>
               <v-sheet class="my-2 mx-5">
-                <!-- <div class="form-example"></div> -->
-                <br />
-                <h2>
+                <h3 class="my-5">
                   {{ loggedIn ? "サインアウトします" : "サインイン" }}
-                </h2>
-                <br />
-                <!-- <v-spacer></v-spacer> -->
+                </h3>
                 <form
                   class="my-4"
                   v-if="!loggedIn"
                   @submit.prevent="login(isActive)"
                 >
-                  <div class="form-example">
-                    <label for="name">user ID</label>
-                    <v-text-field
-                      id="userId"
-                      required
-                      placeholder="半角英数字"
-                      v-model="loginParam.username"
-                    />
-                    <label for="name">password</label>
-                    <v-text-field
-                      id="password"
-                      required
-                      placeholder="半角英数字・記号"
-                      v-model="loginParam.password"
-                    />
-                  </div>
-                  <div class="text-center">
-                    <v-btn
-                      type="submit"
-                      color="primary"
-                      block
-                      text="送信"
-                    ></v-btn>
-                  </div>
-                  <!-- <v-text-field
+                  <label for="name">user ID</label>
+                  <v-text-field
+                    id="userId"
+                    required
+                    placeholder="半角英数字"
                     v-model="loginParam.username"
+                  />
+                  <label for="name">password</label>
+                  <v-text-field
+                    id="password"
                     required
-                    placeholder="ユーザーID"
-                  /> -->
-                  <!-- <v-spacer></v-spacer> -->
-                  <!-- <v-text-field
+                    placeholder="半角英数字・記号"
                     v-model="loginParam.password"
-                    required
-                    placeholder="半角英数字・半角記号で入力"
-                  /> -->
-                  <!-- <div class="text-center"> -->
-                  <!-- <v-btn
-                      color="primary"
-                      block
-                      text="Enter"
-                      @click="login(isActive)"
-                    ></v-btn> -->
-                  <!-- </div> -->
+                  />
+                  <v-btn
+                    type="submit"
+                    color="primary"
+                    class="my-5"
+                    block
+                    text="送信"
+                  ></v-btn>
                 </form>
                 <v-spacer></v-spacer>
-                <div class="text-center">
+                <v-btn
+                  v-if="loggedIn"
+                  color="primary"
+                  class="my-5"
+                  block
+                  text="OK"
+                  @click.prevent="logout(isActive)"
+                ></v-btn>
+                <!-- <v-btn text="取得" @click.prevent="getUserInfo"></v-btn> -->
+                <div class="right">
                   <v-btn
-                    v-if="loggedIn"
-                    color="primary"
-                    block
-                    text="OK"
-                    @click.prevent="logout(isActive)"
+                    text="Cancel"
+                    @click.prevent="isActive.value = !isActive.value"
                   ></v-btn>
                 </div>
-                <br />
-                <div class="text-center">
-                  <!-- <v-btn text="取得" @click.prevent="getUserInfo"></v-btn> -->
-                </div>
-                <v-btn
-                  text="Cancel"
-                  @click.prevent="isActive.value = !isActive.value"
-                ></v-btn>
               </v-sheet>
             </v-sheet>
           </template>
@@ -303,13 +279,18 @@ async function getUserInfo() {
         ></v-list-item>
         <v-list-item
           prepend-icon="mdi-forum"
-          title="About"
+          title="Others"
           value="about"
         ></v-list-item>
       </v-list>
     </v-navigation-drawer>
     <v-main>
-      <router-view />
+      <router-view
+        :loggedIn="loggedIn"
+        :nickname="userProfile.nickname"
+        :loginUser="userProfile.username"
+        @loginDemand="logout"
+      />
     </v-main>
     <v-footer color="grey" dark app class="justify-center">
       Django Startup - Step3
@@ -325,5 +306,15 @@ async function getUserInfo() {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+.v-input__details {
+  padding-top: 0px;
+}
+.right {
+  text-align: right;
+  /* border: 1px solid #999;
+    padding: 10px;
+    background: #fff9cc;
+    margin-top:10px; */
 }
 </style>

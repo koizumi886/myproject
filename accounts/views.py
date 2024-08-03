@@ -26,8 +26,8 @@ class UserRegistrationView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         # エラーの場合、HTTP 400 Bad Requestを返却
         if serializer.is_valid(raise_exception=True):
-            user = serializer.save() # シリアライズ
-            return Response({'user': UserRegistrationSerializer(user).data, # デシリアライズ
+            user = serializer.save()
+            return Response({'user': UserRegistrationSerializer(user).data, # シリアライズ
                              'message': 'ユーザー登録が完了しました！'},
                             status=status.HTTP_201_CREATED)
 
