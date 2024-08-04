@@ -12,19 +12,23 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+import environ
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+env = environ.Env()
+env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-y+w8ki0tp25fd728f&k6mgoobb1i45890)y^l#)u7!4*idrf9c'
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['*']
 
@@ -128,10 +132,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = env('STATIC_URL') 
 STATICFILES_DIRS = [BASE_DIR / 'dist/static']  # 追加
-MEDIA_URL = '/media/' # 画像ファイルを参照するためのURL
-MEDIA_ROOT = BASE_DIR / 'media' # 画像保存先ディレクトリ
+MEDIA_URL = env('MEDIA_URL') # 画像ファイルを参照するためのURL
+MEDIA_ROOT = env('MEDIA_ROOT') # 画像保存先ディレクトリ
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

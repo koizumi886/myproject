@@ -35,8 +35,11 @@ const userProfile = ref<UserProfile>({
   email: null,
   comment: null,
 });
+// const error_msg = ref();
 
-onMounted(() => {});
+onMounted(() => {
+  confirmLogin();
+});
 
 // const useGetCookie = () => {
 //   // const $cookies = inject<VueCookies>("$cookies");
@@ -52,49 +55,48 @@ onMounted(() => {});
 //   loggedIn.value = false;
 //   return false;
 // };
-// ログイン状態取得
-if (sessionStorage.getItem("loggedIn")) {
-  loginUser.value = {
-    message: "",
-    token: sessionStorage.getItem("token"),
-    username: sessionStorage.getItem("username"),
-  };
-  userProfile.value = {
-    id: null,
-    username: null,
-    nickname: sessionStorage.getItem("nickname"),
-    email: null,
-    comment: null,
-  };
-  loggedIn.value = true;
-  console.log("初期 in");
-} else {
-  loggedIn.value = false;
-  console.log("初期 out");
+// ログイン状態取得（再ロード・別タブ）
+function confirmLogin() {
+  if (localStorage.getItem("loggedIn")) {
+    loginUser.value = {
+      message: "",
+      token: localStorage.getItem("token"),
+      username: localStorage.getItem("username"),
+    };
+    userProfile.value = {
+      id: null,
+      username: localStorage.getItem("username"),
+      nickname: localStorage.getItem("nickname"),
+      email: null,
+      comment: null,
+    };
+    loggedIn.value = true;
+    console.log("初期 in");
+  } else {
+    loggedIn.value = false;
+
+    console.log("初期 out");
+  }
 }
+confirmLogin();
 
 let meta = document.createElement("meta");
 meta.name = "description";
 meta.content =
   "<meta> 要素は、名前と値のペアで文書のメタデータを提供するのに使用できます。name 属性はメタデータの名前を与え、content 属性は値を与えます。";
 document.head.appendChild(meta);
-meta.name = "login";
-console.log("set" + loggedIn.value);
-// meta.content = loggedIn.value ? "Yes" : "No";
-meta.content = loggedIn.value ? "Yes" : "No";
-document.head.appendChild(meta);
+
 watch(loggedIn, () => {
   if (loggedIn.value) {
-    sessionStorage.setItem("loggedIn", "true");
     console.log("in" + loggedIn.value);
-    sessionStorage.setItem("token", loginUser.value!.token!);
-    sessionStorage.setItem("username", loginUser.value!.username!);
-    meta.content = loggedIn.value ? "Yes" : "No";
+    localStorage.setItem("loggedIn", "true");
+    localStorage.setItem("token", loginUser.value!.token!);
+    localStorage.setItem("username", loginUser.value!.username!);
   } else {
-    sessionStorage.removeItem("loggedIn");
+    localStorage.removeItem("loggedIn");
+    localStorage.clear();
     loginUser.value = undefined;
     console.log("out" + loggedIn.value);
-    meta.content = loggedIn.value ? "Yes" : "No";
   }
 });
 
@@ -116,6 +118,11 @@ watch(loggedIn, () => {
 
 // ログイン
 async function login(isActive: { value: boolean }) {
+  confirmLogin();
+  if (loggedIn.value) {
+    isActive.value = !isActive.value;
+    return;
+  }
   console.log("login" + isActive.value);
   await axios
     .post("/api/accounts/login/", {
@@ -124,28 +131,37 @@ async function login(isActive: { value: boolean }) {
     })
     .then((response: AxiosResponse<User>) => {
       loginUser.value = response.data;
-      console.log("Set-Cookie:" + response.headers["content-type"]);
-      console.log("Set-Cookie:" + response.headers["Set-Cookie"]);
       // axios.defaults.headers.common["X-CSRFToken"] =
       //   response.headers["Set-Cookie"];
       loginParam.value = { username: null, password: null };
-
       loggedIn.value = true;
       // ユーザー情報取得
       getUserInfo();
+      isActive.value = !isActive.value;
     })
     .catch((error: AxiosError) => {
-      alert("ログインでエラーが発生しました\n" + error.message);
-      console.log(error.message);
+      // console.log(error.response?.data);
+      if (error.response?.status == 400) {
+        // error_msg.value = error.response.data?.non_field_errors;
+        alert(error.response.data?.non_field_errors);
+        return;
+      } else {
+        alert("ログインエラーが発生しました\n" + error.message);
+      }
       return;
     });
-
-  isActive.value = !isActive.value;
 }
 
 // ログアウト
-function logout(isActive: { value: boolean }) {
+function logout(isActive?: { value: boolean }) {
   console.log("logout");
+  confirmLogin();
+  if (!loggedIn.value) {
+    if (isActive?.value) {
+      isActive.value = !isActive.value;
+    }
+    return;
+  }
   const headers = {
     Authorization: `token ${loginUser.value?.token}`,
   };
@@ -161,7 +177,7 @@ function logout(isActive: { value: boolean }) {
       loggedIn.value = false;
     })
     .catch((error: AxiosError) => {
-      alert("エラーが発生しました\n" + error.message);
+      alert("ログアウトエラーが発生しました\n" + error.message);
       console.log(error.message);
     });
   if (isActive?.value) {
@@ -176,7 +192,7 @@ async function getUserInfo() {
     .get("/api/accounts/profile/", { withCredentials: true })
     .then((response: AxiosResponse<UserProfile>) => {
       userProfile.value = response.data;
-      sessionStorage.setItem("nickname", userProfile.value!.nickname!);
+      localStorage.setItem("nickname", userProfile.value!.nickname!);
       console.log("userProfile:" + userProfile.value);
     })
     .catch((error: AxiosError) => {
@@ -184,12 +200,17 @@ async function getUserInfo() {
       console.log(error.message);
     });
 }
+// window.addEventListener("beforeunload", unload);
+// function unload() {
+//   // localStorage.clear();
+//   logout();
+// }
 </script>
 
 <template>
   <v-app>
     <!-- <v-system-bar color="grey-lighten-4"> System Bar </v-system-bar> -->
-    <v-app-bar color="lime-darken-3" dark app>
+    <v-app-bar color="lime-lighten-4" dark app>
       <template v-slot:prepend>
         <v-app-bar-nav-icon
           variant="text"
@@ -235,6 +256,7 @@ async function getUserInfo() {
                     placeholder="半角英数字・記号"
                     v-model="loginParam.password"
                   />
+                  <!-- ログインボタン -->
                   <v-btn
                     type="submit"
                     color="primary"
@@ -244,6 +266,7 @@ async function getUserInfo() {
                   ></v-btn>
                 </form>
                 <v-spacer></v-spacer>
+                <!-- ログアウトボタン -->
                 <v-btn
                   v-if="loggedIn"
                   color="primary"
@@ -292,9 +315,9 @@ async function getUserInfo() {
         @loginDemand="logout"
       />
     </v-main>
-    <v-footer color="grey" dark app class="justify-center">
+    <!-- <v-footer color="lime-darken-3" dark app class="justify-center" height="25">
       Django Startup - Step3
-    </v-footer>
+    </v-footer> -->
   </v-app>
 </template>
 

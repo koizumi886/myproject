@@ -123,9 +123,7 @@ async function onSubmit() {
         console.log(error.message);
         if (error.response?.status == 403) {
           emit("loginDemand");
-          alert(
-            "タイムアウトのため再ログインを行ってください\n" + error.message
-          );
+          alert("再ログインを行ってください\n" + error.message);
           onCancel();
         } else {
           alert("エラーが発生しました\n" + error.message);
@@ -157,7 +155,7 @@ async function onDelete() {
       console.log(error.message);
       if (error.response?.status == 403) {
         emit("loginDemand");
-        alert("タイムアウトのため再ログインを行ってください\n" + error.message);
+        alert("再ログインを行ってください\n" + error.message);
         onCancel();
       } else {
         alert("エラーが発生しました\n" + error.message);

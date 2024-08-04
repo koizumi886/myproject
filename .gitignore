@@ -8,3 +8,4 @@ jobs/migrations/
 __pycache__/
 dist/
 media/
+.env
